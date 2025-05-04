@@ -134,6 +134,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="OpenGLDraw.h" />
     <ClInclude Include="OpenGLLoader.h" />
+    <ClInclude Include="GLSLShaderLoader.h" />
     <ClInclude Include="Utilities.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
