@@ -12,7 +12,8 @@
 #include "GLSLShaderLoader.h"
 #include <iostream>
 #include <random>
-#include "QueryAttribs.h"
+#include "QueryShader.h"
+#include <fstream>
 
 
 
@@ -37,22 +38,14 @@ int main(int argc, char** argv)
 	glfwSetWindowCloseCallback(window, glfw_window_close_callback);
 	glfwSetFramebufferSizeCallback(window, glfw_framebuffer_size_callback);
 
-	const char* vertshader =
-		"#version 430												        \n"
-		"layout(location = 0) in vec3 vertPos;							    \n"
-		"layout(location = 1) in vec3 vertColor;					        \n"
-		"out vec4 fragColor;											    \n"
-		"void main(){                                                       \n"
-		"  fragColor = vec4(vertColor, 1.0);								\n"
-		"  gl_Position = vec4(vertPos, 1.0);								\n"
-		"}";
-	const char* fragshader =
-		"#version 430 													    \n"
-		"in vec4 fragColor;												    \n"
-		"out vec4 color;												    \n"
-		"void main(){													    \n"
-		"	color = fragColor;											    \n"
-		"}";
+    #include <string>  
+
+	const std::string vertShaderSource = ReadToString("..\\OpenGLTest\\GLSL\\VertexShader.glsl");
+	const std::string fragShaderSource = ReadToString("..\\OpenGLTest\\GLSL\\FragmentShader.glsl");
+
+	const char* vertshader = vertShaderSource.c_str();
+	const char* fragshader = fragShaderSource.c_str();
+
 	
 	unsigned int mainShader = LoadShader(vertshader, fragshader);
 	glClearColor(0.f, 0.f, 0.f, 0.f);
@@ -79,6 +72,7 @@ int main(int argc, char** argv)
 	//std::uniform_real_distribution<float> distribution(0.f,1.f);
 
 	QueryAttribs(mainShader);
+	QueryUniforms(mainShader);
 
 	while (!glfwWindowShouldClose(window))
 	{

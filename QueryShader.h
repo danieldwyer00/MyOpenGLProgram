@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <glad/glad.h>
 #include <vector>
 #include <stdio.h>
@@ -57,6 +57,32 @@ void QueryAttribs(GLuint handle)
 		char* name = new char[nameBufferSize];
 		glGetProgramResourceName(handle, GL_PROGRAM_INPUT, i, nameBufferSize, NULL, name);
 		printf("%-5d %s (%s)\n",results[2],name, getTypeString(results[1]));
+		delete[] name;
+	}
+}
+inline void QueryUniforms(const GLuint& handle) {
+	printf("-----UNIFORMS(shaderprog:%i)-----\n", handle);
+
+	GLint numUniforms = 0;
+	glGetProgramInterfaceiv(handle, GL_UNIFORM,
+		GL_ACTIVE_RESOURCES, &numUniforms);
+	//  2. Loop through each uniform index and query for the length of the name, the type, the
+	  //  location and the block index:
+	GLenum properties[] = { GL_NAME_LENGTH, GL_TYPE,
+	  GL_LOCATION, GL_BLOCK_INDEX };
+	printf("Active uniforms(%i):\n", numUniforms);
+	for (int i = 0; i < numUniforms; ++i) {
+		GLint results[4];
+		glGetProgramResourceiv(handle, GL_UNIFORM, i, 4,
+			properties, 4, NULL, results);
+		if (results[3] != -1)
+			continue; // Skip uniforms in blocks
+		GLint nameBufSize = results[0] + 1;
+		char* name = new char[nameBufSize];
+		glGetProgramResourceName(handle, GL_UNIFORM, i,
+			nameBufSize, NULL, name);
+		printf("%-5d %s (%s)\n", results[2], name,
+			getTypeString(results[1]));
 		delete[] name;
 	}
 }

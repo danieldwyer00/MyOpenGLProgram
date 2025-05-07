@@ -4,6 +4,8 @@
 #include <string>
 #include <fstream>
 #include <ctime>
+#include <sstream>
+#include <string>
 
 static const char* extract_version(const char* full)
 {
@@ -48,4 +50,15 @@ void printGLinfo()
 
 	const GLubyte* glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
 	printf("GLSL Version: %s\n", glslVersion);
+}
+
+std::string ReadToString(const std::string& filename) {
+	std::ifstream file(filename);
+	if (!file) {
+		throw std::runtime_error("Failed to open file: " + filename);
+	}
+
+	std::ostringstream contents;
+	contents << file.rdbuf();
+	return contents.str();
 }

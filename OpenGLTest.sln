@@ -1,9 +1,26 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenGLTest", "OpenGLTest.vcxproj", "{B137D8D3-A5F5-4119-97CF-1A3B06258CC1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GLSL", "GLSL", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		FragmentShader.glsl = FragmentShader.glsl
+		VertexShader.glsl = VertexShader.glsl
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rendering", "rendering", "{15B286A1-84C1-4925-993C-65297A25FA29}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GL", "GL", "{2B35CAB6-0FCF-4ECF-A778-1C7E7D9D275B}"
+	ProjectSection(SolutionItems) = preProject
+		GLSLShaderLoader.h = GLSLShaderLoader.h
+		OpenGLDraw.h = OpenGLDraw.h
+		OpenGLLoader.h = OpenGLLoader.h
+		QueryShader.h = QueryShader.h
+		Vertex.h = Vertex.h
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +41,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2B35CAB6-0FCF-4ECF-A778-1C7E7D9D275B} = {15B286A1-84C1-4925-993C-65297A25FA29}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F0F5F46C-7DB9-4F40-BD68-051123AFDB9D}
