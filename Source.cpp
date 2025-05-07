@@ -12,6 +12,9 @@
 #include "GLSLShaderLoader.h"
 #include <iostream>
 #include <random>
+#include "QueryAttribs.h"
+
+
 
 
 int main(int argc, char** argv)
@@ -25,50 +28,57 @@ int main(int argc, char** argv)
 	glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
 
 
-	GLFWwindow* window = glfwCreateWindow(800, 600, extract_version(argv[0]), nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(1920, 1200, extract_version(argv[0]), nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
-	
+	printGLinfo();
 
 	glfwSetWindowCloseCallback(window, glfw_window_close_callback);
 	glfwSetFramebufferSizeCallback(window, glfw_framebuffer_size_callback);
 
 	const char* vertshader =
-		"#version 450 core                                                  \n"
-		"layout(location = 0) in vec3 vertexPosition_modelspace;            \n"
-		//"uniform mat4 modelmatrix;                                          \n"
+		"#version 430												        \n"
+		"layout(location = 0) in vec3 vertPos;							    \n"
+		"layout(location = 1) in vec3 vertColor;					        \n"
+		"out vec4 fragColor;											    \n"
 		"void main(){                                                       \n"
-		//"  gl_Position = modelmatrix * vec4(vertexPosition_modelspace, 1.0);\n"
-		"  gl_Position = vec4(vertexPosition_modelspace, 1.0);\n"
+		"  fragColor = vec4(vertColor, 1.0);								\n"
+		"  gl_Position = vec4(vertPos, 1.0);								\n"
 		"}";
 	const char* fragshader =
-		"#version 450 core   \n"
-		"out vec3 color;     \n"
-		"uniform vec3 ucolor = vec3(.5f,.5f,.5f);\n"
-		"void main() {       \n"
-		"  color = ucolor;   \n"
+		"#version 430 													    \n"
+		"in vec4 fragColor;												    \n"
+		"out vec4 color;												    \n"
+		"void main(){													    \n"
+		"	color = fragColor;											    \n"
 		"}";
 	
 	unsigned int mainShader = LoadShader(vertshader, fragshader);
-
-
-	glClearColor(.2f, .2f, .6f, 0.f);
+	glClearColor(0.f, 0.f, 0.f, 0.f);
 	std::vector<DrawDetails> ourDrawDetails;
+
 	{
-		//Create object to display points
-		std::vector<Vertex> obj_pts;
-		obj_pts.emplace_back(.5f, -.5f, 0.f);
-		obj_pts.emplace_back(-.5f, -.5f, 0.f);
-		obj_pts.emplace_back(0.f, 0.5f, 0.f);
+		const float posData[] = {
+			-0.8f, -0.8f, 0.0f,
+			0.8f, -0.8f, 0.0f,
+			0.0f, 0.8f, 0.0f
+		};
+		const float colorData[] = {
+			1.0f, 0.0f, 0.0f,
+			0.0f, 1.0f, 0.0f,
+			0.0f, 0.0f, 1.0f
+		};
 
-		std::vector<uint32_t> elem = { 0,1,2 };
-
+		const GLuint elems[] = {0,1,2};
 		//Upload Data to Grpahics Card
-		ourDrawDetails.push_back(UploadMesh(obj_pts, elem));
+		ourDrawDetails.push_back(UploadMesh(posData, colorData, sizeof(posData)/sizeof(posData[0]),
+			elems, sizeof(elems)/sizeof(elems[0])));
 	}
-	std::default_random_engine generator;
-	std::uniform_real_distribution<float> distribution(0.f,1.f);
+	//std::default_random_engine generator;
+	//std::uniform_real_distribution<float> distribution(0.f,1.f);
+
+	QueryAttribs(mainShader);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -78,13 +88,7 @@ int main(int argc, char** argv)
 		//render object
 		glUseProgram(mainShader);
 
-		float c1 = distribution(generator);
-		float c2 = distribution(generator);
-		float c3 = distribution(generator);
 
-		uint32_t var = glGetUniformLocation(mainShader, "ucolor");
-
-		glUniform3f(var, c1,c2,c3);
 
 		Draw(ourDrawDetails);
 		glfwSwapBuffers(window);

@@ -2,31 +2,46 @@
 #include <vector>
 #include "Vertex.h"
 
-static DrawDetails UploadMesh(const std::vector<Vertex>& verts, const std::vector<uint32_t> elem)
+static DrawDetails UploadMesh(const GLfloat* verts, const GLfloat* colors, const int v_count,
+	const GLuint* elems, const int e_count)
 {
-	if(verts.empty() || elem.empty())
-		throw("empty vector");
-	uint32_t VAO, VBO, EBO;
+	GLuint vboHandles[2];
+	glGenBuffers(2, vboHandles);
+	GLuint positionBufferHandle = vboHandles[0];
+	GLuint colorBufferHandle = vboHandles[1];
+	//Populate the position buffer
+	glBindBuffer(GL_ARRAY_BUFFER, positionBufferHandle);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * v_count * 3, verts, GL_STATIC_DRAW);
+	//Populate the color buffer
+	glBindBuffer(GL_ARRAY_BUFFER, colorBufferHandle);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * v_count * 3, colors, GL_STATIC_DRAW);
 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	//Create the vertex array object
+	GLuint vaoHandle;
+	glGenVertexArrays(1, &vaoHandle);
+	glBindVertexArray(vaoHandle);
+	//enable the vertex attribute arrays
+	glEnableVertexAttribArray(0); //position
+	glEnableVertexAttribArray(1); //color
 
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(Vertex), verts.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(Vertex),(const void*)offsetof(Vertex,Pos));
-	glEnableVertexAttribArray(0);
+	glBindVertexBuffer(0, positionBufferHandle, 0, sizeof(GLfloat) * 3);
+	glBindVertexBuffer(1, colorBufferHandle, 0, sizeof(GLfloat) * 3);
 
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, elem.size() * sizeof(uint32_t), elem.data(), GL_STATIC_DRAW);
+	glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
+	glVertexAttribBinding(0, 0);//map to shader
 
-	glBindVertexArray(0);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
+	glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 0);
+	glVertexAttribBinding(1, 1);//map to shader
 
-	return DrawDetails(VAO, elem.size());
+	GLuint elemHandle;
+	glGenBuffers(1, &elemHandle);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elemHandle);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, e_count * sizeof(GLuint),elems,GL_STATIC_DRAW);
+
+	return DrawDetails(vaoHandle, static_cast<uint32_t>(e_count));
 }
+
+
 
 static void UnloadMesh(std::vector<DrawDetails>& details)
 {
