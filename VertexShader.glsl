@@ -1,9 +1,11 @@
 #version 430
-layout(location = 0) in vec3 vertPos;
-layout(location = 1) in vec3 vertColor;
-out vec4 fragColor;
+layout(location = 0) in vec3 pos;
+layout(location = 1) in vec3 color;
+layout(location = 0) out vec3 passColor;
+uniform mat4 uModelMatrix;
 void main()
 {
-	fragColor = vec4(vertColor, 1.0);
-	gl_Position = vec4(vertPos, 1.0);
+	passColor = color;
+	vec4 finalPos = uModelMatrix * vec4(pos, 1.0);
+	gl_Position = finalPos;
 }

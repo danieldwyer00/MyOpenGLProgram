@@ -1,7 +1,8 @@
 #version 430
-in vec4 fragColor;
-out vec4 color;
+layout(location = 0) in vec3 passColor;
+out vec4 fragColor;
+
 void main()
 {
-	color = fragColor;
+	fragColor = vec4(passColor,1.0);
 }
